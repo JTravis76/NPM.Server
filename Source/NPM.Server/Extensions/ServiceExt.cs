@@ -25,9 +25,8 @@ namespace NPM.Server.Extensions
             services.AddMvc(config =>
             {
                 config.MaxModelValidationErrors = 10;
-                config.MaxValidationDepth = 3;
             })
-            .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2)
+            .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1)
             .AddJsonOptions(opt =>
             {
                 //switch back to PascalCase from default camelCase
