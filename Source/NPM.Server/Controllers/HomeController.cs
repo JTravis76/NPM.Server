@@ -111,7 +111,7 @@ namespace NPM.Server.Controllers
         [Authorize]
         [Route("{name}")]
         [HttpPut]
-        public IActionResult Package_PUT(Newtonsoft.Json.Linq.JObject jObj)
+        public IActionResult Package_PUT(dynamic jObj)//(Newtonsoft.Json.Linq.JObject jObj)
         {
             string packageName = jObj.SelectToken("name").ToString();
             string version = jObj.SelectToken("dist-tags.latest").ToString();
