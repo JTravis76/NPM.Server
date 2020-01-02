@@ -110,6 +110,7 @@ namespace NPM.Server.Controllers
 
         [Authorize]
         [Route("{name}")]
+        [Route("{org}/{name}")]
         [HttpPut]
         public IActionResult Package_PUT(dynamic jObj)//(Newtonsoft.Json.Linq.JObject jObj)
         {
@@ -237,6 +238,69 @@ namespace NPM.Server.Controllers
             return Ok(new { username = User.Identity.Name });
         }
 
+        [AllowAnonymous]
+        [HttpPost("search")]
+        public IActionResult Search([FromBody]string search = null)
+        {            
+            if (!string.IsNullOrEmpty(search))
+            {
+                string dbPath = $@"{_hosting.ContentRootPath}\NPM-Packages\database.json";
+                string data = System.IO.File.ReadAllText(dbPath);
+                var db = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BusinessObjects.Models.Schema>>(data);
 
+                db = db.Where(x => x.Name.ToLower()
+                    .Contains(search.ToLower()))
+                    .OrderBy(x => x.Name)
+                    .ToList();
+
+                return Ok(db);
+            }
+
+            return Ok(new string[] { });
+        }
+
+        [AllowAnonymous]
+        [HttpPut("indexdb")]
+        public IActionResult IndexDatabase()
+        {
+            string rootDir = $@"{_hosting.ContentRootPath}\NPM-Packages";
+            List<BusinessObjects.Models.Schema> schemas = new List<BusinessObjects.Models.Schema>();
+
+            //Read all files from Directory based on search pattern
+            string[] files = System.IO.Directory.GetFiles(rootDir, "*.json", System.IO.SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                if (file.Contains("database.json"))
+                    continue;
+
+                string data = System.IO.File.ReadAllText(file);
+                var db = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(data);
+
+                try
+                {
+                    schemas.Add(new BusinessObjects.Models.Schema
+                    {
+                        Name = db.name,
+                        Description = db.description,
+                        Version = db.SelectToken("dist-tags.latest").ToString()
+                    });
+                }
+                catch (Exception e)
+                {
+                    var obj = new {
+                        file,
+                        e.Message
+                    };
+                    System.IO.File.WriteAllText($"{rootDir}\\database.json", Newtonsoft.Json.JsonConvert.SerializeObject(obj), System.Text.Encoding.Default);
+                    throw;
+                }
+
+                //System.IO.FileInfo f = new System.IO.FileInfo(file);
+            }
+
+            System.IO.File.WriteAllText($"{rootDir}\\database.json", Newtonsoft.Json.JsonConvert.SerializeObject(schemas), System.Text.Encoding.Default);
+
+            return Ok("Index database completed.");
+        }
     }
 }

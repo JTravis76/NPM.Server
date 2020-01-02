@@ -1,1 +1,47 @@
-{}
+{
+  "_id": "test-package",
+  "name": "test-package",
+  "description": "Sample package for testing",
+  "dist-tags": {
+    "latest": "0.1.0"
+  },
+  "versions": {
+    "0.1.0": {
+      "name": "test-package",
+      "version": "0.1.0",
+      "description": "Sample package for testing",
+      "main": "index.ts",
+      "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+      },
+      "keywords": [
+        "component",
+        "typescript"
+      ],
+      "author": {
+        "name": ""
+      },
+      "license": "UNLICENSED",
+      "dependencies": {
+        "vue": "^2.5.17"
+      },
+      "readme": "# Test-Package",
+      "readmeFilename": "README.md",
+      "_id": "test-package@0.1.0",
+      "_nodeVersion": "10.6.0",
+      "_npmVersion": "6.9.0",
+      "dist": {
+        "integrity": "sha512-123abc",
+        "shasum": "###",
+        "tarball": "http://localhost/test-package/-/test-package-0.1.0.tgz"
+      }
+    }
+  },
+  "readme": "# Test-Package",
+  "_attachments": {},
+  "time": {
+    "created": "2019-11-14T07:51:34.044904-05:00",
+    "modified": "2019-11-14T07:51:34.0485179-05:00",
+    "1.0.0": "2019-11-14T07:51:34.0485256-05:00"
+  }
+}
