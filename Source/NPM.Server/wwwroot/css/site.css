@@ -1,4 +1,24 @@
-﻿#spinner {
+﻿[v-cloak] {
+    display: none;
+}
+
+body {
+    background-color: black;
+    color: white;
+}
+
+h1 > small > span {
+    font-size: 14px;
+    color: darkgray;
+}
+
+.list-group > button {
+    background-color: black;
+    color: limegreen;
+    border: 1px dotted limegreen !important;
+}
+
+#spinner {
     visibility: hidden;
     width: 80px;
     height: 80px;
@@ -32,6 +52,7 @@
     border: 1px dotted gray;
     padding: 4px 6px;
     background-color: #f1f1f1;
+    color: limegreen;
 }
 
 .markdown blockquote {

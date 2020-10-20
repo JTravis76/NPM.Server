@@ -29,6 +29,20 @@ namespace NPM.Server.Controllers
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        [AllowAnonymous]
+        [Route("aboutserver")]
+        [HttpGet]
+        public IActionResult AboutServer_GET()
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            assembly = System.Reflection.Assembly.LoadFile(assembly.Location);
+            var fileInfo = new System.IO.FileInfo(assembly.Location);
+            string version = assembly.GetName().Version.ToString();
+            DateTime versionDate = fileInfo.LastWriteTime;
+
+            return Ok(new { version, versionDate });
+        }
+
 
         [AllowAnonymous]
         [Route("{name}")]
