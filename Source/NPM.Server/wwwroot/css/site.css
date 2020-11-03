@@ -18,7 +18,18 @@ h1 > small > span {
     border: 1px dotted limegreen !important;
 }
 
+.list-group > button:hover {
+    color: white;
+    background-color: #28a745;
+}
+
+.secret-btn {
+    background-color: transparent;
+    border: none;
+}
+
 #spinner {
+    display: none; /*TODO: spinner is cause some strange screen flicker. hiding for now. */
     visibility: hidden;
     width: 80px;
     height: 80px;
@@ -52,7 +63,7 @@ h1 > small > span {
     border: 1px dotted gray;
     padding: 4px 6px;
     background-color: #f1f1f1;
-    color: limegreen;
+    color: #28a745;
 }
 
 .markdown blockquote {

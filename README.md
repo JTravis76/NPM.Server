@@ -15,8 +15,12 @@ I found to nicer to scoped all in-house packages. Scoped packages started with `
 ## Database
 The original NPM site uses couchdb as their backing store. Here is a simpler JSON database. May move to something better as time progresses.
 
+In version 1.1.0, support for SQLite was added.
+
 To index the database, `PUT http://localhost:<PORT>/indexdb`  
 NOTE the PUT verb.
+
+> Also, may click the hidden button in the upper-left corner under the nav-bar.
 
 ## NPM/Node Setup
 You would need set some npm configuration, this is optional.
@@ -29,6 +33,18 @@ or add following to `.npmrc` file.
 ```
 @acme:registry=http://localhost:<PORT>/
 ```
+
+## Features
+
+Create a user for publishing
+```
+npm adduser --registry http://localhost:<PORT>
+```
+
+Following commands:
+* npm install
+* npm publish
+* npm whoami
 
 ## Publishing Site
 An error is throw when attempting to create a web-package.
@@ -52,19 +68,11 @@ To resolve it, edit the NPM.Server.csproj file.
 </PropertyGroup>
 ```
 
-Then strangly enough, had to change `AspNetCoreModuleV2` to `AspNetCoreModule` in the web.config AFTER a successful deployment.
+Then strangely enough, had to change `AspNetCoreModuleV2` to `AspNetCoreModule` in the web.config AFTER a successful deployment.
 
-## Features
-
-Create a user for publishing
-```
-npm adduser --registry http://localhost:<PORT>
-```
-
-Following commands:
-* npm install
-* npm publish
-* npm whoami
+## Changelog
+v1.0.0 initial release
+v1.1.0 support for SQLite database
 
 ## Contribute
 Please do. Pull requests are very welcome

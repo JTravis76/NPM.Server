@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using NPM.Server.Services;
 
 namespace NPM.Server.Controllers
 {
@@ -22,11 +24,13 @@ namespace NPM.Server.Controllers
     {
         private readonly IHostingEnvironment _hosting;
         private readonly IConfiguration _configuration;
+        private readonly DataContext _dataContext;
 
-        public HomeController(IHostingEnvironment hosting, IConfiguration configuration)
+        public HomeController(IHostingEnvironment hosting, IConfiguration configuration, DataContext dataContext)
         {
             _hosting = hosting ?? throw new ArgumentNullException(nameof(hosting));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _dataContext = dataContext ?? throw new ArgumentNullException(nameof(dataContext));
         }
 
         [AllowAnonymous]
@@ -130,6 +134,7 @@ namespace NPM.Server.Controllers
         {
             string packageName = jObj.SelectToken("name").ToString();
             string version = jObj.SelectToken("dist-tags.latest").ToString();
+            string description = jObj.SelectToken("description").ToString();
             string encodedData = jObj.SelectToken("_attachments.*.data").ToString();
             string directory = $@"{_hosting.ContentRootPath}\NPM-Packages\{packageName}";
 
@@ -192,7 +197,23 @@ namespace NPM.Server.Controllers
                 }
             }
 
-            System.IO.File.WriteAllBytes($@"{directory}\{packageName}-{version}.tgz", Convert.FromBase64String(encodedData));            
+            System.IO.File.WriteAllBytes($@"{directory}\{packageName}-{version}.tgz", Convert.FromBase64String(encodedData));
+
+            // database section
+            var p = _dataContext.Packages.Find(packageName);
+            if (p == null)
+                _dataContext.Add(new BusinessObjects.Entities.Package {
+                    Name = packageName,
+                    Description = description,
+                    Version = version
+                });
+            else
+            {
+                p.Version = version;
+                p.Description = description;
+                _dataContext.Update(p);
+            }
+            _dataContext.SaveChanges();
 
             return StatusCode(201, new { ok = "created new package", success = true });
         }
@@ -258,16 +279,20 @@ namespace NPM.Server.Controllers
         {            
             if (!string.IsNullOrEmpty(search))
             {
-                string dbPath = $@"{_hosting.ContentRootPath}\NPM-Packages\database.json";
-                string data = System.IO.File.ReadAllText(dbPath);
-                var db = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BusinessObjects.Models.Schema>>(data);
+                //string dbPath = $@"{_hosting.ContentRootPath}\NPM-Packages\database.json";
+                //string data = System.IO.File.ReadAllText(dbPath);
+                //var db = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BusinessObjects.Entities.Package>>(data);
 
-                db = db.Where(x => x.Name.ToLower()
-                    .Contains(search.ToLower()))
-                    .OrderBy(x => x.Name)
-                    .ToList();
+                //db = db.Where(x => x.Name.ToLower()
+                //    .Contains(search.ToLower()))
+                //    .OrderBy(x => x.Name)
+                //    .ToList();
 
-                return Ok(db);
+                //return Ok(db);
+
+                // Database Section
+                var packages = _dataContext.Packages.Where(x => x.Name.Contains(search));
+                return Ok(packages);
             }
 
             return Ok(new string[] { });
@@ -278,7 +303,7 @@ namespace NPM.Server.Controllers
         public IActionResult IndexDatabase()
         {
             string rootDir = $@"{_hosting.ContentRootPath}\NPM-Packages";
-            List<BusinessObjects.Models.Schema> schemas = new List<BusinessObjects.Models.Schema>();
+            List<BusinessObjects.Entities.Package> packages = new List<BusinessObjects.Entities.Package>();
 
             //Read all files from Directory based on search pattern
             string[] files = System.IO.Directory.GetFiles(rootDir, "*.json", System.IO.SearchOption.AllDirectories);
@@ -292,7 +317,7 @@ namespace NPM.Server.Controllers
 
                 try
                 {
-                    schemas.Add(new BusinessObjects.Models.Schema
+                    packages.Add(new BusinessObjects.Entities.Package
                     {
                         Name = db.name,
                         Description = db.description,
@@ -305,14 +330,19 @@ namespace NPM.Server.Controllers
                         file,
                         e.Message
                     };
-                    System.IO.File.WriteAllText($"{rootDir}\\database.json", Newtonsoft.Json.JsonConvert.SerializeObject(obj), System.Text.Encoding.Default);
+                    //System.IO.File.WriteAllText($"{rootDir}\\database.json", Newtonsoft.Json.JsonConvert.SerializeObject(obj), System.Text.Encoding.Default);
                     throw;
                 }
 
                 //System.IO.FileInfo f = new System.IO.FileInfo(file);
             }
 
-            System.IO.File.WriteAllText($"{rootDir}\\database.json", Newtonsoft.Json.JsonConvert.SerializeObject(schemas), System.Text.Encoding.Default);
+            // SQLite
+            _dataContext.Database.ExecuteSqlCommand("DELETE FROM Packages;");
+            _dataContext.AddRange(packages);
+            _dataContext.SaveChanges();
+            
+            //System.IO.File.WriteAllText($"{rootDir}\\database.json", Newtonsoft.Json.JsonConvert.SerializeObject(packages), System.Text.Encoding.Default);
 
             return Ok("Index database completed.");
         }
