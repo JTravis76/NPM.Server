@@ -200,10 +200,11 @@ namespace NPM.Server.Controllers
             System.IO.File.WriteAllBytes($@"{directory}\{packageName}-{version}.tgz", Convert.FromBase64String(encodedData));
 
             // database section
-            var p = _dataContext.Packages.Find(packageName);
+            string fullPackageName = jObj.SelectToken("name").ToString();
+            var p = _dataContext.Packages.Find(fullPackageName);
             if (p == null)
                 _dataContext.Add(new BusinessObjects.Entities.Package {
-                    Name = packageName,
+                    Name = fullPackageName,
                     Description = description,
                     Version = version
                 });
