@@ -22,11 +22,11 @@ namespace NPM.Server.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
-        private readonly IHostingEnvironment _hosting;
+        private readonly IWebHostEnvironment _hosting;
         private readonly IConfiguration _configuration;
         private readonly DataContext _dataContext;
 
-        public HomeController(IHostingEnvironment hosting, IConfiguration configuration, DataContext dataContext)
+        public HomeController(IWebHostEnvironment hosting, IConfiguration configuration, DataContext dataContext)
         {
             _hosting = hosting ?? throw new ArgumentNullException(nameof(hosting));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -339,7 +339,7 @@ namespace NPM.Server.Controllers
             }
 
             // SQLite
-            _dataContext.Database.ExecuteSqlCommand("DELETE FROM Packages;");
+            _dataContext.Database.ExecuteSqlRaw("DELETE FROM Packages;");
             _dataContext.AddRange(packages);
             _dataContext.SaveChanges();
             
