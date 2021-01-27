@@ -1,5 +1,5 @@
 # NPM.Server
-Simple on-premise NPM server in ASP.NET Core 2.1.
+Simple on-premise NPM server in ASP.NET Core 3.1.
 
 We (my company) needed a on-premise NPM server to house some of our NPM packages. Similar projects runs on NodeJs, which wasn't a good fit.
 

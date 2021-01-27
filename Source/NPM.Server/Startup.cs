@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using NPM.Server.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace NPM.Server
 {
@@ -40,11 +41,17 @@ namespace NPM.Server
                     };
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            /*== Note: Microsoft is pushing their version of Newtonsoft. To use Newtonsoft, reference nuget AspNetCore.Mvc.NewtonsoftJson */
+            services.AddControllers(opt =>
+            {
+                opt.MaxModelValidationErrors = 10;
+            })
+            //.AddJsonOptions(opt => { });
+            .AddNewtonsoftJson(opt => { });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -52,10 +59,13 @@ namespace NPM.Server
             }
 
             app.UseFileServer();
-
+            app.UseRouting();
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
