@@ -71,9 +71,14 @@ h1 > small > span {
     padding: 1px 16px;
     margin-left: 0px;
     margin-right: 0px;
-    border-left: #cecece solid 10px;
+    border-left: #28a745 solid 10px;
     border-radius: 3px;
+    color: black;
 }
 .form-group > label {
     color:gray;
+}
+
+table > tbody > tr {
+    color: #28a745;
 }
