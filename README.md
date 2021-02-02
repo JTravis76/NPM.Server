@@ -1,11 +1,11 @@
 # NPM.Server
-Simple on-premise NPM server in ASP.NET Core 3.1.
+Simple on-premise NPM server in .NET 5.0. For other version see additional branches; net3.1 & net2.1
 
 We (my company) needed a on-premise NPM server to house some of our NPM packages. Similar projects runs on NodeJs, which wasn't a good fit.
 
 > NOTE: very basic front-end web site is available with searching.
 
-Tested using IIS 8.0 and Window server 2012. 
+Tested using IIS 8.0 and Window server 2012 and Azure DevOps. 
 Since this is a ASP.NET Core application, you must set your application pool to `No Managed Code`.
 
 ## Packages
@@ -13,12 +13,13 @@ NPM packages are stored in the NPM-Packages directory. Each package is located i
 I found to nicer to scoped all in-house packages. Scoped packages started with `@` symbol. Example: @acme/cool-package.
 
 ## Database
-The original NPM site uses couchdb as their backing store. Here is a simpler JSON database. May move to something better as time progresses.
+The original NPM site uses couchdb as their backing store. 
 
 In version 1.1.0, support for SQLite was added.
 
+Older version used a simpler JSON database.  
 To index the database, `PUT http://localhost:<PORT>/indexdb`  
-NOTE the PUT verb.
+NOTE the **PUT** verb.
 
 > Also, may click the hidden button in the upper-left corner under the nav-bar.
 
@@ -48,6 +49,8 @@ Following commands:
 
 ## Publishing Site
 An error is throw when attempting to create a web-package.
+
+> NOTE: this error seem to resolved itself in .Net 3.1 & Net 5.0
 
 ```
 Error
